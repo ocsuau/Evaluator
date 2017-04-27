@@ -10,42 +10,33 @@ public class Evaluator {
         Token[] tokens = Token.getTokens(expr);
         Queue<Token> resultList = new LinkedList<>();
         LinkedList<Token> operationList = new LinkedList<>();
-        boolean par = false;
 
         for (int i = 0; i < tokens.length; i++) {
             if (tokens[i].getTtype() == Token.Toktype.NUMBER) {
                 resultList.offer(tokens[i]);
-            } else if (tokens[i].getTtype() == Token.Toktype.OP) {
-                if (operationList.size() != 0) {
-                    while (operationList.size() > 0 && getPriority(tokens[i].getOp()) <= getPriority(operationList.peek().getOp())) {
+            } else{
+                if(tokens[i].getOp() == ')'){
+                    while(operationList.peek().getOp() != '('){
+                        resultList.offer(operationList.poll());
+                    }
+                    operationList.poll();
+                    continue;
+                }
+                else if (operationList.size() != 0 && operationList.peek().getOp() != '('){
+                    while (operationList.size() > 0 && getPriority(tokens[i].getOp()) <= getPriority(operationList.peek().getOp()) && operationList.peek().getOp() != '('){
                         resultList.offer(operationList.poll());
                     }
                 }
                 operationList.push(tokens[i]);
             }
-                    /*while(operationList.size() > 0 && (operationList.peek().getOp() == '*' || operationList.peek().getOp() == '/')){
-                        resultList.offer(operationList.poll());
-                    }*/
-
-
-        //else if(tokens[i].getTtype() == Token.Toktype.PAREN){
-
-        //}
-        if (i == tokens.length - 1) {
-            if (operationList.size() > 0) {
-                Iterator<Token> it = operationList.iterator();
-                while (it.hasNext()) {
-                    resultList.offer(it.next());
-                }
-            }
-            //resultList.offer(operationList.poll());
         }
-    }
-    // Efectua el procediment per convertir la llista de tokens en notació RPN
-    // Finalment, crida a calcRPN amb la nova llista de tokens i torna el resultat
-        return
-
-    calcRPN(resultList.toArray(new Token[resultList.size()]));
+        if (operationList.size() > 0) {
+            Iterator<Token> it = operationList.iterator();
+            while (it.hasNext()) {
+                resultList.offer(it.next());
+            }
+        }
+        return calcRPN(resultList.toArray(new Token[resultList.size()]));
 }
 
     public static int calcRPN(Token[] list) {
@@ -74,6 +65,9 @@ public class Evaluator {
             case '*':
             case '/':
                 return 2;
+            case '(':
+            case ')':
+                return 3;
             default:
                 throw new RuntimeException();
         }
