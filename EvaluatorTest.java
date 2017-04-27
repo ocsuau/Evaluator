@@ -69,4 +69,10 @@ public class EvaluatorTest {
         assertEquals(-1, Evaluator.calculate("(((3-4)))"));
         assertEquals(-25, Evaluator.calculate("((5+34)*3-78+6)*1-(54+65/3+7-1000/(100-20))"));
     }
+
+    @Test
+    public void testsPotenci() {
+        assertEquals(4, Evaluator.calculate("2^2"));
+        assertEquals(8, Evaluator.calculate("9_2+2^2+1"));
+    }
 }

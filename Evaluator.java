@@ -68,6 +68,9 @@ public class Evaluator {
             case '(':
             case ')':
                 return 3;
+            case '^':
+            case '_':
+                return 4;
             default:
                 throw new RuntimeException();
         }
@@ -83,6 +86,10 @@ public class Evaluator {
                 return value1 * value2;
             case '/':
                 return value1 / value2;
+            case '^':
+                return (int) Math.pow(value1, value2);
+            case '_':
+                return (int) Math.pow(value1, (1/value2));
             default:
                 throw new RuntimeException("Operación no permitida. Carácter equivocado");
         }
