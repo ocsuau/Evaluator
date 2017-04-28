@@ -30,6 +30,7 @@ public class Evaluator {
                 operationList.push(tokens[i]);
             }
         }
+
         if (operationList.size() > 0) {
             Iterator<Token> it = operationList.iterator();
             while (it.hasNext()) {
@@ -40,21 +41,16 @@ public class Evaluator {
 }
 
     public static int calcRPN(Token[] list) {
-        // Calcula el valor resultant d'avaluar la llista de tokens
-        int result = 0;
         LinkedList<Integer> tokenList = new LinkedList<>();
 
-        for (int i = 0; i < list.length; i++) {
-            if (list[i].getTtype() == Token.Toktype.NUMBER) {
-                tokenList.push(list[i].getValue());
+        for(Token t : list){
+            if (t.getTtype() == Token.Toktype.NUMBER) {
+                tokenList.push(t.getValue());
             } else {
-                result += doOp(tokenList.poll(), tokenList.poll(), list[i].getOp());
-                tokenList.push(result);
-                result = 0;
+                tokenList.push((int)doOp(tokenList.poll(), tokenList.poll(), t.getOp()));
             }
         }
         return tokenList.poll();
-
     }
 
     private static int getPriority(char op) {
@@ -65,14 +61,14 @@ public class Evaluator {
             case '*':
             case '/':
                 return 2;
-            case '(':
-            case ')':
-                return 3;
             case '^':
             case '_':
+                return 3;
+            case '(':
+            case ')':
                 return 4;
             default:
-                throw new RuntimeException();
+                throw new RuntimeException("Carácter equivocado. Función getPriority");
         }
     }
 
@@ -87,12 +83,11 @@ public class Evaluator {
             case '/':
                 return value1 / value2;
             case '^':
-                return (int) Math.pow(value1, value2);
+                return (float) Math.pow(value1, value2);
             case '_':
-                return (int) Math.pow(value1, (1/value2));
+                return (float) Math.pow(value1, (1/(float)value2));
             default:
-                throw new RuntimeException("Operación no permitida. Carácter equivocado");
+                throw new RuntimeException("Operación no permitida. Carácter/valores equivocados");
         }
     }
-
 }
