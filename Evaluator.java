@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -6,7 +5,6 @@ public class Evaluator {
 
 
     public static int calculate(String expr) {
-        // Convertim l'string d'entrada en una llista de tokens
         Token[] tokens = Token.getTokens(expr);
         Queue<Token> resultList = new LinkedList<>();
         LinkedList<Token> operationList = new LinkedList<>();
@@ -16,27 +14,25 @@ public class Evaluator {
                 resultList.offer(tokens[i]);
             } else{
                 if(tokens[i].getOp() == ')'){
-                    while(operationList.peek().getOp() != '('){
-                        resultList.offer(operationList.poll());
+                    for(Token t = operationList.poll(); t.getOp() != '('; t = operationList.poll()){
+                        resultList.offer(t);
                     }
-                    operationList.poll();
                     continue;
                 }
-                else if (operationList.size() != 0 && operationList.peek().getOp() != '('){
-                    while (operationList.size() > 0 && getPriority(tokens[i].getOp()) <= getPriority(operationList.peek().getOp()) && operationList.peek().getOp() != '('){
-                        resultList.offer(operationList.poll());
-                    }
+                while(operationList.size() != 0 && operationList.peek().getOp() != '(' && getPriority(tokens[i].getOp()) <= getPriority(operationList.peek().getOp())){
+                    resultList.offer(operationList.poll());
                 }
                 operationList.push(tokens[i]);
             }
         }
 
-        if (operationList.size() > 0) {
-            Iterator<Token> it = operationList.iterator();
-            while (it.hasNext()) {
-                resultList.offer(it.next());
-            }
+        for(Token t : operationList){
+            resultList.offer(t);
         }
+        /*while(operationList.size() > 0){
+            resultList.offer(operationList.poll());
+        }*/
+
         return calcRPN(resultList.toArray(new Token[resultList.size()]));
 }
 
