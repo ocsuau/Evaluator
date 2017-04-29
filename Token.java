@@ -1,8 +1,9 @@
 import java.util.LinkedList;
 import java.util.Queue;
 
-//Clase Token, donde almacenamos las características de los token que vayamos creando.
+//Clase "Token", donde almacenamos las características de los token que vayamos creando.
 public class Token {
+
     //Generamos un ENUM del tipo de token para evitar que se puedan crear tokens distintos a los establecidos.
     enum Toktype {
         NUMBER, OP, PAREN
