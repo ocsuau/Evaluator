@@ -73,7 +73,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void testsPotenci() {
+    public void tests_Potencis_i_arrels() {
         assertEquals(4, Evaluator.calculate("2^2"));
         assertEquals(8, Evaluator.calculate("((9¬2)+(2^2+1))"));
         assertEquals(9, Evaluator.calculate("64¬3+2^2+1"));

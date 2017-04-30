@@ -31,13 +31,13 @@ public class Token {
     /*Método donde retornamos la instancia que retorna el constructor. Acceder a este método significa que el token que quieren
     crear es un operador*/
     static Token tokOp(char c) {
-        return new Token(Toktype.OP, 0, c);
+        return new Token(Toktype.OP, -1, c);
     }
 
     /*Método donde retornamos la instancia que retorna el constructor. Acceder a este método significa que el token que quieren
     crear es uno de los dos carácteres que representan el paréntesis*/
     static Token tokParen(char c) {
-        return new Token(Toktype.PAREN, 0, c);
+        return new Token(Toktype.PAREN, -1, c);
     }
 
     //Getter del tipo de token.
@@ -46,17 +46,34 @@ public class Token {
     }
 
     //Getter del carácter que representa al operador del token
-    public char getOp(){
-        return this.tk;
+    public char getOp() throws RuntimeException {
+
+        /*Comprobamos que a dicho método no lo está llamando una instancia de "Token" que sea de tipo "NUMBER". En dicho caso,
+        provocamos una excepción*/
+        if (this.tk != ' ') {
+            return this.tk;
+        }
+        throw new RuntimeException("Token de tipo NUMBER intentando consultar su carácter");
     }
 
     //Getter del valor que representa el valor del token
-    public int getValue(){
-        return this.value;
+    public int getValue() throws RuntimeException {
+
+        /*Comprobamos que este método no está siendo consultado por una instancia de "Token" de un tipo distinto a "NUMBER". Si
+        fuera así, provocamos una excepción.*/
+        if (this.value != -1) {
+            return this.value;
+        }
+        throw new RuntimeException("Token de tipo distinto a NUMBER intentando consultar su número");
     }
 
-    public String toString() {
-        return "" + this.tk;
+    /*Método "toString", donde retornamos el carácter de la instancia siempre que sea de tipo distinto a "NUMBER". En caso contrario,
+    provocamos una excepción*/
+    public String toString() throws RuntimeException {
+        if (this.tk != ' ') {
+            return "" + this.tk;
+        }
+        throw new RuntimeException("Token de tipo distinto a NUMBER intentando consultar su número");
     }
 
     /*Método equals donde comparamos dos tokens*/
@@ -70,22 +87,37 @@ public class Token {
 
     /*Método donde generamos un array de tokens a partir del String que nos pasan como parámetro. (Facilita las operaciones
     posteriores)*/
-    public static Token[] getTokens(String expr) {
+    public static Token[] getTokens(String expr) throws RuntimeException {
 
         /*En la cola "charToken" almacenaremos los tokens que vayamos generando en el método "insertExpr" a partir de "expr". Posteriormente,
         convertiremos la lista en un array de tokens y lo retornaremos*/
         Queue<Token> charToken = new LinkedList<>();
-        insertExpr(charToken, expr);
-        return charToken.toArray(new Token[charToken.size()]);
+
+        /*Definimos un bloque "try" para poder manejar las posibles excepcionesque se pudieran generar*/
+        try {
+            insertExpr(charToken, expr);
+            return charToken.toArray(new Token[charToken.size()]);
+
+            //Capturamos la posible excepción Runtime.
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+
+            /*En caso de tener una excepción diferente a Runtime, capturamos la excepción en variable "Exception" y provocamos una
+            "RuntimeException"*/
+        } catch (Exception e) {
+            throw new RuntimeException("Excepción que no es subclase de 'RuntimeException'");
+        }
+        return null;
     }
 
     //Método donde generaremos la lista de tokens a partir del String que nos pasan como parámetro.
-    private static void insertExpr(Queue<Token> charToken, String expr){
+    private static void insertExpr(Queue<Token> charToken, String expr) throws RuntimeException {
 
         /*La variable "count" nos permitirá generar números enteros de más de una cifra a partir de los carácteres que forman el
         número (Si en el bucle estamos tratando un carácter que representa un número, no lo podemos añadir directamente a la cola
         porque puede que el carácter siguiente sea otro número y, por lo tanto, estemos tratando con un número de más de una cifra)*/
-        int count = 0;
+        int count = -1;
 
         //Recorremos la expresión
         for(int i = 0; i < expr.length(); i++){
