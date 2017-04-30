@@ -46,6 +46,8 @@ public class EvaluatorTest {
 
     @Test
     public void tests_sumes_restes_combinades() {
+        assertEquals(0, Evaluator.calculate("0+0+0"));
+        assertEquals(1, Evaluator.calculate("1+0+0"));
         assertEquals(3, Evaluator.calculate("1+1+1"));
         assertEquals(2, Evaluator.calculate("4+5-7"));
         assertEquals(4, Evaluator.calculate("6-8+9-3"));
@@ -73,8 +75,8 @@ public class EvaluatorTest {
     @Test
     public void testsPotenci() {
         assertEquals(4, Evaluator.calculate("2^2"));
-        assertEquals(8, Evaluator.calculate("((9_2)+(2^2+1))"));
-        assertEquals(9, Evaluator.calculate("64_3+2^2+1"));
-        assertEquals(26, Evaluator.calculate("(2^(625_4)-48/(12-4))"));
+        assertEquals(8, Evaluator.calculate("((9¬2)+(2^2+1))"));
+        assertEquals(9, Evaluator.calculate("64¬3+2^2+1"));
+        assertEquals(26, Evaluator.calculate("(2^(625¬4)-48/(12-4))"));
     }
 }

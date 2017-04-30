@@ -133,7 +133,7 @@ public class Evaluator {
             case '/':
                 return 2;
             case '^':
-            case '_':
+            case '¬':
                 return 3;
                 /*Los paréntesis son los que mayor prioridad tienen ya que no permitirían sacar un operador de la pila de operadores
                 en caso de que quisiéramos introducir un paréntesis*/
@@ -151,7 +151,7 @@ public class Evaluator {
 
     /*Método donde retornamos el valor resultante de una operación (que nos mandan como parámetro) entre dos valores (que también
     nos pasan como parámetros). Además, indicamos que este método puede generar exceptiones de tipo Runtime.*/
-    private static int doOp(int value2, int value1, char op) throws RuntimeException {
+    private static int doOp(int value2, int value1, char op) throws RuntimeException, ArithmeticException {
         switch (op) {
             case '+':
                 return value1 + value2;
@@ -160,12 +160,18 @@ public class Evaluator {
             case '*':
                 return value1 * value2;
             case '/':
-                return value1 / value2;
+
+                //Comprobamos que no realizamos una división entre 0. En dicho caso, provocamos una excepción.
+                if (value2 != 0) {
+                    return value1 / value2;
+                }
+                throw new ArithmeticException();
+
             //Potencias
             case '^':
                 return (int) (float) Math.pow(value1, value2);
             //Raíces 'n'arias
-            case '_':
+            case '¬':
                 return (int) (float) Math.pow(value1, (1 / (float) value2));
             default:
 
