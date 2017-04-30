@@ -128,7 +128,7 @@ public class Token {
                 /*Comprobamos el valor de "count". En caso de ser -1, le sumamos 1 y lo multiplicamos por 10 para que, al sumarle
                 el dígito que estamos tratando, se forme el verdadero número de más de una cifra. Si su valor es distinto a -1,
                 directamente lo multiplicamos por 10*/
-                count = (count == -1) ? (count + 1) * 10 : count * 10;
+                count = (count == -1) ? 0 : count * 10;
 
                 /*Pasamos el carácter a un número entero que corresponde al valor del carácter. (Podríamos utilizar el método
                 "Integer.parseInt()", pero dicho método solo acepta, como parámetro, un String, y de esta otra forma me parece más

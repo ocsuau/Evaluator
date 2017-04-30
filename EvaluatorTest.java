@@ -78,5 +78,7 @@ public class EvaluatorTest {
         assertEquals(8, Evaluator.calculate("((9¬2)+(2^2+1))"));
         assertEquals(9, Evaluator.calculate("64¬3+2^2+1"));
         assertEquals(26, Evaluator.calculate("(2^(625¬4)-48/(12-4))"));
+        //assertEquals(0, Evaluator.calculate("-4¬-2"));
+        //assertEquals(0, Evaluator.calculate("&3-4"));
     }
 }

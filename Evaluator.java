@@ -108,10 +108,11 @@ public class Evaluator {
             return tokenList.poll();
         }
         /*Capturamos las posibles excepciones que se hayan podido generar en el bloque "try" o en funciones a las que llamemos
-            desde el ya mencionado bloque.*/ catch (RuntimeException e) {
+        desde el ya mencionado bloque.*/ catch (RuntimeException e) {
 
             //Si es una excepción Runtime, simplemente imprimimos su mensaje para saber de qué método viene.
             System.out.println(e.getMessage());
+            System.out.println(e.toString());
         } catch (Exception e) {
 
             /*Si no es una excepción Runtime, capturamos la excepción en variable tipo "Exception" y provocamos un "RuntimeException"*/
@@ -151,7 +152,7 @@ public class Evaluator {
 
     /*Método donde retornamos el valor resultante de una operación (que nos mandan como parámetro) entre dos valores (que también
     nos pasan como parámetros). Además, indicamos que este método puede generar exceptiones de tipo Runtime.*/
-    private static int doOp(int value2, int value1, char op) throws RuntimeException, ArithmeticException {
+    private static int doOp(int value2, int value1, char op) throws RuntimeException {
         switch (op) {
             case '+':
                 return value1 + value2;
@@ -160,13 +161,7 @@ public class Evaluator {
             case '*':
                 return value1 * value2;
             case '/':
-
-                //Comprobamos que no realizamos una división entre 0. En dicho caso, provocamos una excepción.
-                if (value2 != 0) {
-                    return value1 / value2;
-                }
-                throw new ArithmeticException();
-
+                return value1 / value2;
             //Potencias
             case '^':
                 return (int) (float) Math.pow(value1, value2);
