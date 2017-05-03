@@ -78,7 +78,25 @@ public class EvaluatorTest {
         assertEquals(8, Evaluator.calculate("((9¬2)+(2^2+1))"));
         assertEquals(9, Evaluator.calculate("64¬3+2^2+1"));
         assertEquals(26, Evaluator.calculate("(2^(625¬4)-48/(12-4))"));
-        //assertEquals(0, Evaluator.calculate("-4¬-2"));
-        //assertEquals(0, Evaluator.calculate("&3-4"));
+    }
+
+    @Test
+    public void tests_unaris() {
+        assertEquals(2, Evaluator.calculate("-3+5"));
+        assertEquals(6, Evaluator.calculate("-2+6-(-2)"));
+        assertEquals(-44, Evaluator.calculate("-3+(-8*6)-(-7)"));
+        assertEquals(-44, Evaluator.calculate("-3+-8*6--7"));
+        assertEquals(-1, Evaluator.calculate("-2+1"));
+        assertEquals(5, Evaluator.calculate("2*4+(-3)"));
+        assertEquals(5, Evaluator.calculate("2*4+-3"));
+        assertEquals(11, Evaluator.calculate("2*4+--3"));
+        assertEquals(1, Evaluator.calculate("-2+6-(-2+5)"));
+        assertEquals(11, Evaluator.calculate("-2+6-(-2)+5"));
+    }
+
+    @Test
+    public void testsFactorials() {
+        assertEquals(8, Evaluator.calculate("2+3!"));
+        assertEquals(120, Evaluator.calculate("(2+3)!"));
     }
 }

@@ -88,7 +88,7 @@ public class Evaluator {
         LinkedList<Integer> tokenList = new LinkedList<>();
 
         /*Encapsularemos el código en un "try" para poder capturar las posibles excepciones que se pudieran generar.*/
-        try {
+
             //Recorremos "list" (array de tokens que nos pasan como parámetro)
             for (Token t : list) {
 
@@ -99,31 +99,22 @@ public class Evaluator {
             /*Si el token que estamos tratando es de tipo "OP", sacaremos los dos primeros elementos de la pila y los pasaremos,
             junto con el token que estamos tratando, al método "doOp". Su retorno lo añadiremos en la misma "tokenList".*/
                 } else {
-                    tokenList.push(doOp(tokenList.poll(), tokenList.poll(), t.getOp()));
+                    if (t.getOp() == '!') {
+                        tokenList.push(doOp(tokenList.poll(), 0, t.getOp()));
+                    } else {
+                        tokenList.push(doOp(tokenList.poll(), tokenList.poll(), t.getOp()));
+                    }
                 }
             }
 
         /*Al finalizar el bucle, en "tokenList" sólo quedará un elemento, que será el resultado final de las operaciones que hemos
         ido realizando en el bucle anterior. Sacamos dicho elemento y lo retornamos.*/
             return tokenList.poll();
-        }
-        /*Capturamos las posibles excepciones que se hayan podido generar en el bloque "try" o en funciones a las que llamemos
-        desde el ya mencionado bloque.*/ catch (RuntimeException e) {
-
-            //Si es una excepción Runtime, simplemente imprimimos su mensaje para saber de qué método viene.
-            System.out.println(e.getMessage());
-            System.out.println(e.toString());
-        } catch (Exception e) {
-
-            /*Si no es una excepción Runtime, capturamos la excepción en variable tipo "Exception" y provocamos un "RuntimeException"*/
-            throw new RuntimeException();
-        }
-        return 0;
     }
 
     /*Método donde retornamos la prioridad del operador en función del carácter que nos mandan. Además, indicamos que este
     método puede generar exceptiones de tipo Runtime.*/
-    private static int getPriority(char op) throws RuntimeException {
+    private static int getPriority(char op) {
 
         //Evaluamos el carácter con un "switch"
         switch (op) {
@@ -136,13 +127,15 @@ public class Evaluator {
             case '^':
             case '¬':
                 return 3;
+            case '!':
+                return 4;
                 /*Los paréntesis son los que mayor prioridad tienen ya que no permitirían sacar un operador de la pila de operadores
                 en caso de que quisiéramos introducir un paréntesis*/
             case '(':
 
                 //Teóricamente éste caso nunca se podrá dar, por lo pongo para que sea visualmente correcto
             case ')':
-                return 4;
+                return 5;
             default:
                 /*En caso de que no se hayan cumplido ninguno de los casos anteriores, provocamos un "RuntimeException" indicando el
                 mensaje de error*/
@@ -152,7 +145,7 @@ public class Evaluator {
 
     /*Método donde retornamos el valor resultante de una operación (que nos mandan como parámetro) entre dos valores (que también
     nos pasan como parámetros). Además, indicamos que este método puede generar exceptiones de tipo Runtime.*/
-    private static int doOp(int value2, int value1, char op) throws RuntimeException {
+    private static int doOp(int value2, int value1, char op) {
         switch (op) {
             case '+':
                 return value1 + value2;
@@ -168,11 +161,21 @@ public class Evaluator {
             //Raíces 'n'arias
             case '¬':
                 return (int) (float) Math.pow(value1, (1 / (float) value2));
+            //Factorial
+            case '!':
+                return calcFactorial(value2);
             default:
 
                 /*En caso de que no se hayan cumplido ninguno de los casos anteriores, provocamos un "RuntimeException" indicando el
                 mensaje de error*/
                 throw new RuntimeException("Operación no permitida. Carácter/valores equivocados");
         }
+    }
+
+    private static int calcFactorial(int value) {
+        for (int i = value - 1; i > 1; i--) {
+            value *= i;
+        }
+        return value;
     }
 }

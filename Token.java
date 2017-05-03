@@ -46,7 +46,7 @@ public class Token {
     }
 
     //Getter del carácter que representa al operador del token
-    public char getOp() throws RuntimeException {
+    public char getOp() {
 
         /*Comprobamos que a dicho método no lo está llamando una instancia de "Token" que sea de tipo "NUMBER". En dicho caso,
         provocamos una excepción*/
@@ -57,11 +57,11 @@ public class Token {
     }
 
     //Getter del valor que representa el valor del token
-    public int getValue() throws RuntimeException {
+    public int getValue() {
 
         /*Comprobamos que este método no está siendo consultado por una instancia de "Token" de un tipo distinto a "NUMBER". Si
         fuera así, provocamos una excepción.*/
-        if (this.value != -1) {
+        if (this.tk == ' ') {
             return this.value;
         }
         throw new RuntimeException("Token de tipo distinto a NUMBER intentando consultar su número");
@@ -69,7 +69,7 @@ public class Token {
 
     /*Método "toString", donde retornamos el carácter de la instancia siempre que sea de tipo distinto a "NUMBER". En caso contrario,
     provocamos una excepción*/
-    public String toString() throws RuntimeException {
+    public String toString() {
         if (this.tk != ' ') {
             return "" + this.tk;
         }
@@ -87,11 +87,11 @@ public class Token {
 
     /*Método donde generamos un array de tokens a partir del String que nos pasan como parámetro. (Facilita las operaciones
     posteriores)*/
-    public static Token[] getTokens(String expr) throws RuntimeException {
+    public static Token[] getTokens(String expr) {
 
         /*En la cola "charToken" almacenaremos los tokens que vayamos generando en el método "insertExpr" a partir de "expr". Posteriormente,
         convertiremos la lista en un array de tokens y lo retornaremos*/
-        Queue<Token> charToken = new LinkedList<>();
+        LinkedList<Token> charToken = new LinkedList<>();
 
         /*Definimos un bloque "try" para poder manejar las posibles excepcionesque se pudieran generar*/
         try {
@@ -112,12 +112,14 @@ public class Token {
     }
 
     //Método donde generaremos la lista de tokens a partir del String que nos pasan como parámetro.
-    private static void insertExpr(Queue<Token> charToken, String expr) throws RuntimeException {
+    private static void insertExpr(LinkedList<Token> charToken, String expr) {
 
-        /*La variable "count" nos permitirá generar números enteros de más de una cifra a partir de los carácteres que forman el
+        /*La variable "number" nos permitirá generar números enteros de más de una cifra a partir de los carácteres que forman el
         número (Si en el bucle estamos tratando un carácter que representa un número, no lo podemos añadir directamente a la cola
         porque puede que el carácter siguiente sea otro número y, por lo tanto, estemos tratando con un número de más de una cifra)*/
-        int count = -1;
+        StringBuilder number = new StringBuilder();
+
+        char c;
 
         //Recorremos la expresión
         for(int i = 0; i < expr.length(); i++){
@@ -125,30 +127,23 @@ public class Token {
             //Si el carácter es representa un número
             if (expr.charAt(i) >= '0' && expr.charAt(i) <= '9') {
 
-                /*Comprobamos el valor de "count". En caso de ser -1, le sumamos 1 y lo multiplicamos por 10 para que, al sumarle
-                el dígito que estamos tratando, se forme el verdadero número de más de una cifra. Si su valor es distinto a -1,
-                directamente lo multiplicamos por 10*/
-                count = (count == -1) ? 0 : count * 10;
-
-                /*Pasamos el carácter a un número entero que corresponde al valor del carácter. (Podríamos utilizar el método
-                "Integer.parseInt()", pero dicho método solo acepta, como parámetro, un String, y de esta otra forma me parece más
-                sencillo)*/
-                count += ((int) expr.charAt(i)) - 48;
+                /*Añadimos el número "number"*/
+                number.append(expr.charAt(i));
             }
             else{
                 //Llegar a este punto significa que el carácter que estamos tratando no representa un número.
 
-                /*Antes de comprobar qué carácter estamos tratando, comprobaremos el contenido de "count" (Llegar a este punto
-                significa que el número que hayamos podido almacenar en "count" no está formado por más cifras, por eso comprobamos
-                si su valor es distinto a -1 (que valga -1 significa que no hemos almacenado ningún número). En caso afirmativo,
-                introducimos el objeto de tipo "NUMBER" llamando a "tokNumber" y le pasamos el valor de "count" como parámetro
-                en la cola)*/
-                if (count != -1) {
-                    charToken.offer(tokNumber(count));
+                /*Antes de comprobar qué carácter estamos tratando, comprobaremos el contenido de "number" (Llegar a este punto
+                significa que el número que hayamos podido almacenar en "number" no está formado por más cifras, por eso comprobamos
+                si su longitud es distinta a 0 (que valga 0 significa que no hemos almacenado ningún número). En caso afirmativo,
+                introducimos el objeto de tipo "NUMBER" llamando a "tokNumber" y le pasamos el resultado de llamar al método
+                "parseInt" de la clase "Integer". Su retorno lo añadimos a la cola)*/
+                if (number.length() != 0) {
+                    charToken.offer(tokNumber(Integer.parseInt(number.toString())));
 
-                    /*Seguidamente reasignamos el valor -1 a "count* para indicar que el próximo número que nos encontremos en la
+                    /*Seguidamente vaciamos "number" para indicar que el próximo número que nos encontremos en la
                     expresión será el primer dígito de un nuevo número y, por lo tanto, un nuevo objeto "Token" de tipo "NUMBER".*/
-                    count = -1;
+                    number.delete(0, number.length());
                 }
 
                 /*Si el carácter que estamos tratando es un paréntesis, insertamos en la cola el objeto de tipo "PAREN" llamando
@@ -161,14 +156,20 @@ public class Token {
                 significa que estamos tratando un operador y, por lo tanto, insertamos en la cola el objeto de tipo "OP" llamando
                 al método "tokOp"*/
                 else if(expr.charAt(i) != ' '){
-                    charToken.offer(tokOp(expr.charAt(i)));
+                    c = expr.charAt(i);
+                    if (c == '-' && (i == 0 || (charToken.getLast().getTtype() == Toktype.OP || (charToken.getLast().getTtype() == Toktype.PAREN && charToken.getLast().getOp() == '(')))) {
+                        charToken.offer(tokNumber(-1));
+                        charToken.offer(tokOp('*'));
+                    } else {
+                        charToken.offer(tokOp(c));
+                    }
                 }
             }
         }
         /*Una vez finalizado el bucle, puede darse el caso que en "count" tengamos algún valor que no hayamos añadido en la cola.
         Si es así, lo insertamos."*/
-        if (count != -1) {
-            charToken.offer(tokNumber(count));
+        if (number.length() != 0) {
+            charToken.offer(tokNumber(Integer.parseInt(number.toString())));
         }
     }
 }
