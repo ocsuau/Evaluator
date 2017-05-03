@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.Queue;
 
 //Clase "Token", donde almacenamos las características de los token que vayamos creando.
 public class Token {
@@ -25,7 +24,7 @@ public class Token {
     /*Método donde retornamos la instancia que retorna el constructor. Acceder a este método significa que el token que quieren
     crear es un número*/
     static Token tokNumber(int value) {
-        return new Token(Toktype.NUMBER, value, ' ');
+        return new Token(Toktype.NUMBER, value, (char) 0);
     }
 
     /*Método donde retornamos la instancia que retorna el constructor. Acceder a este método significa que el token que quieren
@@ -50,7 +49,7 @@ public class Token {
 
         /*Comprobamos que a dicho método no lo está llamando una instancia de "Token" que sea de tipo "NUMBER". En dicho caso,
         provocamos una excepción*/
-        if (this.tk != ' ') {
+        if (this.tk != (char) 0) {
             return this.tk;
         }
         throw new RuntimeException("Token de tipo NUMBER intentando consultar su carácter");
@@ -61,7 +60,7 @@ public class Token {
 
         /*Comprobamos que este método no está siendo consultado por una instancia de "Token" de un tipo distinto a "NUMBER". Si
         fuera así, provocamos una excepción.*/
-        if (this.tk == ' ') {
+        if (this.tk == (char) 0) {
             return this.value;
         }
         throw new RuntimeException("Token de tipo distinto a NUMBER intentando consultar su número");
