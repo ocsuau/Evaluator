@@ -92,6 +92,8 @@ public class EvaluatorTest {
         assertEquals(11, Evaluator.calculate("2*4+--3"));
         assertEquals(1, Evaluator.calculate("-2+6-(-2+5)"));
         assertEquals(11, Evaluator.calculate("-2+6-(-2)+5"));
+        assertEquals(3, Evaluator.calculate("5+2*(-3+2)"));
+        assertEquals(9, Evaluator.calculate("5+8/(-3+5)"));
     }
 
     @Test

@@ -30,7 +30,12 @@ public class Token {
     /*Método donde retornamos la instancia que retorna el constructor. Acceder a este método significa que el token que quieren
     crear es un operador*/
     static Token tokOp(char c) {
-        return new Token(Toktype.OP, -1, c);
+        /*Comprobamos si el parámetro que nos han pasado es uno de los carácteres con los que trabajamos para realizar los cálculos.
+        En caso contrario, provocamos una excepción*/
+        if (opExists(c)) {
+            return new Token(Toktype.OP, -1, c);
+        }
+        throw new RuntimeException();
     }
 
     /*Método donde retornamos la instancia que retorna el constructor. Acceder a este método significa que el token que quieren
@@ -66,13 +71,9 @@ public class Token {
         throw new RuntimeException("Token de tipo distinto a NUMBER intentando consultar su número");
     }
 
-    /*Método "toString", donde retornamos el carácter de la instancia siempre que sea de tipo distinto a "NUMBER". En caso contrario,
-    provocamos una excepción*/
+    //Método "toString", donde retornamos el tipo de token de la instancia.
     public String toString() {
-        if (this.tk != ' ') {
-            return "" + this.tk;
-        }
-        throw new RuntimeException("Token de tipo distinto a NUMBER intentando consultar su número");
+        return "" + this.ttype;
     }
 
     /*Método equals donde comparamos dos tokens*/
@@ -88,26 +89,11 @@ public class Token {
     posteriores)*/
     public static Token[] getTokens(String expr) {
 
-        /*En la cola "charToken" almacenaremos los tokens que vayamos generando en el método "insertExpr" a partir de "expr". Posteriormente,
+        /*En la lista "charToken" almacenaremos los tokens que vayamos generando en el método "insertExpr" a partir de "expr". Posteriormente,
         convertiremos la lista en un array de tokens y lo retornaremos*/
         LinkedList<Token> charToken = new LinkedList<>();
-
-        /*Definimos un bloque "try" para poder manejar las posibles excepcionesque se pudieran generar*/
-        try {
-            insertExpr(charToken, expr);
-            return charToken.toArray(new Token[charToken.size()]);
-
-            //Capturamos la posible excepción Runtime.
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-
-            /*En caso de tener una excepción diferente a Runtime, capturamos la excepción en variable "Exception" y provocamos una
-            "RuntimeException"*/
-        } catch (Exception e) {
-            throw new RuntimeException("Excepción que no es subclase de 'RuntimeException'");
-        }
-        return null;
+        insertExpr(charToken, expr);
+        return charToken.toArray(new Token[charToken.size()]);
     }
 
     //Método donde generaremos la lista de tokens a partir del String que nos pasan como parámetro.
@@ -135,8 +121,8 @@ public class Token {
                 /*Antes de comprobar qué carácter estamos tratando, comprobaremos el contenido de "number" (Llegar a este punto
                 significa que el número que hayamos podido almacenar en "number" no está formado por más cifras, por eso comprobamos
                 si su longitud es distinta a 0 (que valga 0 significa que no hemos almacenado ningún número). En caso afirmativo,
-                introducimos el objeto de tipo "NUMBER" llamando a "tokNumber" y le pasamos el resultado de llamar al método
-                "parseInt" de la clase "Integer". Su retorno lo añadimos a la cola)*/
+                creamomos una instancia de tipo "NUMBER" llamando a "tokNumber" y le pasamos el resultado de llamar al método
+                "parseInt" de la clase "Integer". Su retorno lo añadimos a la lista)*/
                 if (number.length() != 0) {
                     charToken.offer(tokNumber(Integer.parseInt(number.toString())));
 
@@ -154,11 +140,21 @@ public class Token {
                 /*Si no estamos tratando un paréntesis, comprobamos que no estemos tratando un espacio. En caso afirmativo,
                 significa que estamos tratando un operador y, por lo tanto, insertamos en la cola el objeto de tipo "OP" llamando
                 al método "tokOp"*/
+
+                /*Si no estamos tratando un paréntesis, comprobamos que no estemos tratando un espacio.*/
                 else if(expr.charAt(i) != ' '){
                     c = expr.charAt(i);
+                    /*En este punto, comprobamos que el carácter en cuestión sea un '-' que actúa como operador unario. En dicho
+                    caso, añadimos en "charToken" una nueva instancia tipo "NUMBER" con valor -1 y una nueva instancia tipo "OP"
+                    con el carácter '*'. (Independientemente del carácter que tenga a la izquierda, tendrá mayor prioridad la
+                    multiplicación (si a la izquierda tiene un operador con mayor prioridad, será independiente cambiar el signo al grupo
+                    de la izquierda como el de la derecha)*/
                     if (c == '-' && (i == 0 || (charToken.getLast().getTtype() == Toktype.OP || (charToken.getLast().getTtype() == Toktype.PAREN && charToken.getLast().getOp() == '(')))) {
                         charToken.offer(tokNumber(-1));
                         charToken.offer(tokOp('*'));
+
+                        /*En caso de no cumplirse la condición anterior, simplemente creamos una nueva instancia de "Token" de
+                        tipo "OP" pasándole como parámetro el carácter que representa al operador*/
                     } else {
                         charToken.offer(tokOp(c));
                     }
@@ -170,5 +166,22 @@ public class Token {
         if (number.length() != 0) {
             charToken.offer(tokNumber(Integer.parseInt(number.toString())));
         }
+    }
+
+    /*Método donde comprobamos si el carácter que nos pasan por parámetro es uno de los que permitimos en nuestro algorimo*/
+    private static boolean opExists(char c) {
+        switch (c) {
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+            case '^':
+            case '¬':
+            case '!':
+            case '(':
+            case ')':
+                return true;
+        }
+        return false;
     }
 }
