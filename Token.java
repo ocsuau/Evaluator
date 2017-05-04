@@ -35,7 +35,7 @@ public class Token {
         if (opExists(c)) {
             return new Token(Toktype.OP, -1, c);
         }
-        throw new RuntimeException();
+        throw new RuntimeException("Se ha introducido un carácter que no representa a uno de los carácteres que nuestro algoritmo comprende como operador");
     }
 
     /*Método donde retornamos la instancia que retorna el constructor. Acceder a este método significa que el token que quieren
@@ -68,12 +68,13 @@ public class Token {
         if (this.tk == (char) 0) {
             return this.value;
         }
-        throw new RuntimeException("Token de tipo distinto a NUMBER intentando consultar su número");
+        throw new RuntimeException("Token de tipo DISTINTO a NUMBER intentando consultar su número");
     }
 
-    //Método "toString", donde retornamos el tipo de token de la instancia.
+    /*Método "toString", donde, en caso de acceda una instancia tipo "NUMBER", retornamos su valor. En su defecto, retornamos el
+    carácter que representa a la instancia*/
     public String toString() {
-        return "" + this.ttype;
+        return (this.ttype == Toktype.NUMBER) ? "" + this.value : "" + this.tk;
     }
 
     /*Método equals donde comparamos dos tokens*/
@@ -103,8 +104,6 @@ public class Token {
         número (Si en el bucle estamos tratando un carácter que representa un número, no lo podemos añadir directamente a la cola
         porque puede que el carácter siguiente sea otro número y, por lo tanto, estemos tratando con un número de más de una cifra)*/
         StringBuilder number = new StringBuilder();
-
-        char c;
 
         //Recorremos la expresión
         for(int i = 0; i < expr.length(); i++){
@@ -143,20 +142,20 @@ public class Token {
 
                 /*Si no estamos tratando un paréntesis, comprobamos que no estemos tratando un espacio.*/
                 else if(expr.charAt(i) != ' '){
-                    c = expr.charAt(i);
+
                     /*En este punto, comprobamos que el carácter en cuestión sea un '-' que actúa como operador unario. En dicho
                     caso, añadimos en "charToken" una nueva instancia tipo "NUMBER" con valor -1 y una nueva instancia tipo "OP"
                     con el carácter '*'. (Independientemente del carácter que tenga a la izquierda, tendrá mayor prioridad la
                     multiplicación (si a la izquierda tiene un operador con mayor prioridad, será independiente cambiar el signo al grupo
                     de la izquierda como el de la derecha)*/
-                    if (c == '-' && (i == 0 || (charToken.getLast().getTtype() == Toktype.OP || (charToken.getLast().getTtype() == Toktype.PAREN && charToken.getLast().getOp() == '(')))) {
+                    if (expr.charAt(i) == '-' && (i == 0 || (charToken.getLast().getTtype() == Toktype.OP || (charToken.getLast().getTtype() == Toktype.PAREN && charToken.getLast().getOp() == '(')))) {
                         charToken.offer(tokNumber(-1));
                         charToken.offer(tokOp('*'));
 
                         /*En caso de no cumplirse la condición anterior, simplemente creamos una nueva instancia de "Token" de
                         tipo "OP" pasándole como parámetro el carácter que representa al operador*/
                     } else {
-                        charToken.offer(tokOp(c));
+                        charToken.offer(tokOp(expr.charAt(i)));
                     }
                 }
             }
@@ -168,7 +167,8 @@ public class Token {
         }
     }
 
-    /*Método donde comprobamos si el carácter que nos pasan por parámetro es uno de los que permitimos en nuestro algorimo*/
+    /*Método donde comprobamos si el carácter que nos pasan por parámetro es uno de los que permitimos en nuestro algorimo (En dicho
+    caso, retornamos true)*/
     private static boolean opExists(char c) {
         switch (c) {
             case '+':
@@ -178,8 +178,6 @@ public class Token {
             case '^':
             case '¬':
             case '!':
-            case '(':
-            case ')':
                 return true;
         }
         return false;

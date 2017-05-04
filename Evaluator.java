@@ -34,9 +34,9 @@ public class Evaluator {
                     continue;
                 }
 
-                    /*En este punto sabemos que el caráter que estamos tratando es, teóricamente, un operador. Por lo tanto, lo
-                    introduciremos en "operationList". Pero antes, debemos comprobar si sacamos o no operadores de "operationList"
-                    para introducirlos en "resultList". Los casos son los siguientes.*/
+                    /*En este punto sabemos que el caráter que estamos tratando es, teóricamente, un operador o un paréntesis de
+                    apertura. Por lo tanto, lo introduciremos en "operationList". Pero antes, debemos comprobar si sacamos o no
+                    operadores de "operationList" para introducirlos en "resultList". Los casos son los siguientes.*/
 
                     /*Mientras "operationList" contenga, al menos, un elemento Y el carácter que queramos sacar de "operationList"
                     (stack) no sea un paréntesis de apertura Y la prioridad del operador que estamos tratando sea inferior o igual
@@ -57,8 +57,8 @@ public class Evaluator {
 
             /*Una vez finalizado el bucle, debemos comprobar si en "operationList" quedan tokens por introducir en "resultList".
             Lo comprobamos directamente con un bucle ya que, si en "operationList" no quedan tokens, no entrará en el bucle.*/
-        for (Token t : operationList) {
-            resultList.offer(t);
+        while (!operationList.isEmpty()) {
+            resultList.offer(operationList.poll());
         }
 
             /*Retornamos el retorno de llamar al método "calcRPN", pasándole como parámetro la conversión de "resultList" en un
@@ -94,9 +94,13 @@ public class Evaluator {
             }
         }
 
-        /*Al finalizar el bucle, en "tokenList" sólo quedará un elemento, que será el resultado final de las operaciones que hemos
-        ido realizando en el bucle anterior. Sacamos dicho elemento y lo retornamos.*/
-        return tokenList.poll();
+        /*Al finalizar el bucle, comprobamos que en "tokenList" solo quede un elemento. En dicho caso, lo retornamos. De lo contrario,
+        lanzamos una excepción de tipo "Runtime".*/
+        if (tokenList.size() == 1) {
+            return tokenList.poll();
+        } else {
+            throw new RuntimeException("Sintaxis fallida. La lista donde guardamos el resultado final contiene más de un elemento");
+        }
     }
 
     /*Método donde retornamos la prioridad del operador en función del carácter que nos mandan. Además, indicamos que este
