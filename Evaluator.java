@@ -28,7 +28,8 @@ public class Evaluator {
                     en resultList hasta que encontremos un token que represente un paréntesis de apertura. Seguidamente
                     realizaremos un continue*/
                 if (tok.getOp() == ')') {
-                    for (Token t = operationList.poll(); t.getOp() != '('; t = operationList.poll()) {
+                    Token t;
+                    while ((t = operationList.poll()).getOp() != '(') {
                         resultList.offer(t);
                     }
                     continue;
